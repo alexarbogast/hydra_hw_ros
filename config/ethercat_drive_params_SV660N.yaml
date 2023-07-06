@@ -1,0 +1,275 @@
+# Specify groups of EtherCAT drives and params to apply to each drive
+#
+# Params are specified in the `ethercat_drive_params/<group>` dict:
+# - Keys are EtherCAT index+subindex
+# - Values may be
+#   - a single scalar (applied to all drives in group)
+#   - a list of scalars with one element for each drive
+
+ethercat_drive_params:
+  # Joint drives:  Inovance SV660N
+  joints:
+    device_description_xml:
+      # - See launch/hal_hardware.launch
+      ros_package:  za6_hardware
+      path:  config/SV660_EOE_1Axis_V9.12.xml
+
+    device_id:
+      vendor_id:  0x00100000
+      product_code:  0x000C010D
+
+    # Ethercat master and positions this configuration applies to
+    master: 0
+    positions: [0, 1, 2, 3, 4, 5]
+
+    # Parameter settings
+    param_values:
+      # *** 2000h Servo Motor Parameters ***
+      # Motor code:
+      # 14101:  Inovance 23-bit absolute encoder
+      2000-01h: 14101
+
+      # *** 2001h Servo Drive Parameters ***
+      # Servo drive SN:
+      # 2:  S1R6 0.2kW
+      # 3:  S2R8 0.4kW
+      # 5:  S5R5 0.75kW
+      2001-0Bh: [5, 5, 3, 2, 2, 2]
+
+      # *** 2002h Basic control ***
+      #
+      # Absolute encoder system selection:  def. 0
+      # 1:  Absolute position linear mode (encoder retains value on power down)
+      2002-02h: 1
+      #
+      # Delay from brake output ON to command received:  def. 250 (0-500 ms)
+      # - Drive will not respond to pos/vel/tor cmd within this time from brake on
+      2002-0Ah:  250
+      #
+      # Delay from brake output off to motor de-energized in the
+      #   standstill state:  def. 150 (50-1000ms)
+      # - Upon brake off, after this time, motor will turn off
+      2002-0Bh:  150
+      # Delay from S-OFF to brake output OFF in the rotational state:
+      #   def. 500 (1-1000ms)
+      # - Time from motor disabled to brake signal off
+      2002-0Dh:  500
+
+      # *** 2003h Terminal input parameters ***
+      #
+      # Values for DI "function selection" parameters:
+      # 0: No definition
+      # 1: S-ON
+      # 2: Fault reset
+      # 14: Positive limit switch
+      # 15: Negative limit switch
+      # 31: Home switch
+      # 34: Emergency stop
+      # 38: Touch probe 1
+      # 39: Touch probe 2
+      #
+      # DI1-DI3 function selection
+      2003-03h:  0
+      2003-05h:  0
+      2003-07h:  0
+
+      # *** 2004h Terminal Output Parameters ***
+      #
+      # NOTE:  These work in concert with 60FE-01h (PDO), 60FE-02h, 200D-12h, 200D-14h
+      #
+      # Values for DO "function selection" parameters:
+      # 0: No definition
+      # 1: Servo ready
+      # 2: Motor rotating
+      # 9: Brake output
+      # 10: Warning
+      # 11: Fault
+      # 25: Comparison output
+      # 32: STO EDM
+      # Values for DO "logic selection" parameters:
+      # 0: Normally open
+      # 1: Normally closed
+      #
+      # - DO1, DO2:  EtherCAT forced output
+      2004-01h: 0x001F
+      2004-03h: 0x001F
+      # - DO3:  Brake output
+      2004-05h: 0x0009
+      #
+      # DO1-DO3 logic selection
+      # - 0:  Enabled on DO low
+      # - 1:  Enabled on DO high
+      2004-02h: 1
+      2004-04h: 1
+      # - Brake logic is inverted
+      2004-06h: 0
+
+      # *** 2005h Position Control Parameters ***
+      #
+      # Speed feedforward control selection
+      # - 0: No speed feedforward
+      # - 1: Internal speed feedforward
+      # - 2: 60B1h as speed feedforward
+      # - 3: Zero phase control
+      # - Use 60B1h as source of speed feedforward signal in CSP mode
+      2005-14h: 2
+
+      # *** 2006h Speed Control Parameters ***
+      # Torque feedforward control selection
+      # 2: Use 60B2h as source of torque feedforward signal in CSP mode
+      2006-0Ch: 2
+
+      # *** 2007h Torque Control Parameters ***
+      #
+      # Torque reference filter time constant 1:  0-3000 (x 0.01ms) def. 79
+      2007-06h: 100
+      #
+      # Torque reference filter time constant 2:  0-3000 (x 0.01ms) def. 79
+      2007-07h: 100
+
+      # *** 2008h Gain Parameters ***
+      # NB: parameter values are all integers in drives but are decimals
+      # in manual.  Example: speed loop gain of 800 is equal to 80.0 Hz
+      # in the manual.
+      #
+      # Velocity proportional gain *0.1Hz
+      2008-01h: [350, 400, 400, 250, 250, 400]
+      #
+      # Velocity time constant *0.01ms
+      2008-02h: [1000, 1000, 1000, 1000, 1000, 1000]
+      #
+      # Position proportional gain *0.1Hz
+      2008-03h: [550, 550, 550, 400, 400, 550]
+      #
+      # Gain switchover
+      # use 2008-0Ah
+      2008-09h: 1
+      #
+      # Gain switchover condition
+      # 0:  Always use first gain
+      # - No difference between gains in motion and gains when positioning
+      2008-0Ah: 0
+      #
+      # Inertia ratio
+      # values from qc.py *0.01
+      2008-10h: [45, 318, 216, 281, 141, 38]
+      #
+      # Velocity feedforward filter * 0.01ms
+      2008-13h: 100
+      #
+      # Speed feedforward gain:  0-1000 (0.1%) def. 0
+      # - Feedforward gain set to minimize following error - max value
+      #   produces best results
+      2008-14h: 1000
+      #
+      # Torque feedforward filter * 0.01ms
+      2008-15h: 100
+      #
+      # Torque feedforward gain 0-2000 (0.1%) def. 0
+      2008-16h: 1000
+      #
+      # Velocity feedback cutoff frequency
+      2008-18h: 4000
+      #
+      # PID structure
+      2008-19h: 1000
+
+      # *** 2009h Gain Auto-Tuning Parameters ***
+      #
+      # Automatic gain tuning mode:  def. 4
+      # 0: disabled
+      # 1:  Automatic gain tuning mode, gain parameters tuned automatically
+      #     based on stiffness table
+      # 4:  Normal mode+Inertia auto-tuning
+      2009-01h: 0
+      #
+      # Stiffness level selection 0-31;
+      # higher -> stronger gain and quicker response
+      # 2009-02h: 8
+      2009-02h: [14, 15, 15, 12, 12, 15]
+      #
+      # Disable inertia ratio autotune
+      2009-04h: 0
+
+      # *** 200Ah Fault and Protection Parameters ***
+      #
+      # Power input phase loss protection
+      # 1:  Enable faults and warnings
+      # - Enable voltage fluctuation alarm faults and warnings
+      200A-01h: 1
+      #
+      # Runaway detection
+      200A-0Dh: 0
+
+      # *** 200Dh Auxiliary function parameters ***
+      #
+      # Forced DI/DO selection switch
+      # - 0: No operation
+      # - 1: Forced DI enabled, forced DO disabled
+      # - 2: Forced DI disabled, forced DO enabled
+      # - 3: Forced DI and DO enabled
+      # - 4: EtherCAT forced DO enabled
+      # Also see 2004h
+      200D-12h: 4
+      #
+      # Forced DO setting:  (0-7)
+      # - Bits 0-2 correspond to DO1-DO3, respectively
+      # - Makes no difference with SV660N (03029065) v903.4 v902.9 fw
+      # Also see 2004h
+      200D-14h: 0
+
+      # *** 200Eh Auxiliary function parameters ***
+      #
+      # Node address
+      # - For serial communication
+      # - Used in Inovance software for e.g. firmware update
+      # - May be configured on keypad
+      200E-01h:  [1, 2, 3, 4, 5, 6]
+      #
+      # Save objects written through communication
+      # - This gets set in drive init; noted here FYI
+      # - 0:  All setting not saved/volatile
+      # - 3:  Save everything to EEPROM/non-volatile
+      # 200E-02h:  0
+      #
+      # EtherCAT synchronization error threshold
+      # - Unit uS; range 100-4000; default 3000
+      200E-21h:  3000
+
+      # *** Standard Device Profile Parameters ***
+      #
+      # Quick stop option code
+      # CSP mode:
+      # 3:  Stop at emergency stop torque in 2007-10h; brake & power off
+      605A-00h: 3
+      #
+      # Following error window
+      6065-00h: 2000000
+      #
+      # Position window:  (reference units) def. 734
+      # - goal position threshold
+      6067-00h: 5872
+      #
+      # Position window time:  0-65535 (ms)
+      # - FIXME - better servo tuning should help us narrow this window
+      6068-00h: 65535
+      #
+      # Home offset:  (ref. units) def. 0
+      607C-00h: [0, 0, 0, 0, 0, 0]
+      #
+      # 6091h Gear Ratio
+      # Sichen sets gear ratio to 6000, but we set it to 1 and handle it in HAL
+      # Motor revolutions
+      6091-01h: 1
+      # Shaft revolutions
+      6091-02h: 1
+      #
+      # Homing method
+      # 35:  Home on current position
+      6098-00h: 35
+      #
+      # Digital output:  Bit mask
+      # - Bits 16, 17, 18 correspond to DO1, DO2, DO3, respectively
+      # - When high, output may be forced high via 60FE-01h bits 16-18
+      # - Also see 2004h, 200D-12h, 200D-14h
+      60FE-02h: 0x00070000
