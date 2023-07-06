@@ -133,9 +133,10 @@ class HALJointPlumber(HALPlumberBase):
 
     #########################
     # Set up HAL for a joint
-    def __init__(self, thread_name, config):
+    def __init__(self, thread_name, joint_name, config):
         # Set base object attributes
         self.thread_name = thread_name
+        self.joint_name = joint_name
         for k, v in config.items():
             setattr(self, k, v)
 
@@ -248,20 +249,16 @@ class HALJointPlumber(HALPlumberBase):
     def connect_hal_ros_control(self):
         # ROS commanded position
         self.signal('ros_pos_cmd').link(
-            "hal_hw_interface.za_joint_%i.pos-cmd" % self.num
-        )
+            f"hal_hw_interface.{self.joint_name}.pos-cmd")
 
         # Joint feedback to ROS
         self.signal('pos_fb').link(
-            'hal_hw_interface.za_joint_%i.pos-fb' % self.num
-        )
+            f'hal_hw_interface.{self.joint_name}.pos-fb')
         self.signal('vel_fb').link(
-            'hal_hw_interface.za_joint_%i.vel-fb' % self.num
-        )
+            f'hal_hw_interface.{self.joint_name}.vel-fb')
 
         self.signal('torque_fb').link(
-            'hal_hw_interface.za_joint_%i.eff-fb' % self.num
-        )
+            f'hal_hw_interface.{self.joint_name}.eff-fb')
 
     def finish_config(self):
         pass
@@ -620,10 +617,15 @@ class HALPlumber(HALPlumberBase):
 
         # Set up joints
         self.joints = []
-        for jconfig in self.joint_config.values():
+        
+        rospy.loginfo("========================================================")
+        rospy.loginfo(self.joint_config.keys())
+
+        for jname, jconfig in self.joint_config.items():
             self.joints.append(
-                self.joint_plumber_class(self.thread_name, jconfig)
+                self.joint_plumber_class(self.thread_name, jname, jconfig)
             )
+
 
     @property
     def num_joints(self):
@@ -735,41 +737,12 @@ class HALPlumber(HALPlumberBase):
         self.func_config("hal_hw_interface", self.Prio.ROS_CONTROL)
 
         hal.Signal('reset').link('hal_hw_interface.reset')
-        # Probe hard-coded to DI1 for now; eventually make this programmable
-        # hal.Signal('digital_in_1').link('hal_hw_interface.probe-signal-in')
-        # hal.newsig('probe_signal_active_low', hal.HAL_BIT).link(
-        #     'hal_hw_interface.probe-signal-active-low'
-        # )
-        # hal.newsig('probe_actual', hal.HAL_BIT).link(
-        #     'hal_hw_interface.probe-out'
-        # )
+
         # hal.Signal('soft_stop').link('hal_hw_interface.stop')
         # hal.Signal('quick_stop').link('hal_hw_interface.estop')
 
         # Controller error code signal
         cec_sig = hal.newsig('controller_error_code', hal.HAL_S32)
-        # cec_sig.link('hal_hw_interface.error-code')
-
-        # hal.newsig('tcp_lin_pos_from_start', hal.HAL_FLOAT).link(
-        #     'hal_hw_interface.tcp_lin.pos-cmd'
-        # )
-        # hal.Signal('tcp_lin_pos_from_start').link(
-        #     'hal_hw_interface.tcp_lin.pos-fb'
-        # )
-        # hal.newsig('tcp_lin_vel', hal.HAL_FLOAT).link(
-        #     'hal_hw_interface.tcp_lin.vel-cmd'
-        # )
-        # hal.Signal('tcp_lin_vel').link('hal_hw_interface.tcp_lin.vel-fb')
-        # hal.newsig('tcp_rot_pos_from_start', hal.HAL_FLOAT).link(
-        #     'hal_hw_interface.tcp_rot.pos-cmd'
-        # )
-        # hal.Signal('tcp_rot_pos_from_start').link(
-        #     'hal_hw_interface.tcp_rot.pos-fb'
-        # )
-        # hal.newsig('tcp_rot_vel', hal.HAL_FLOAT).link(
-        #     'hal_hw_interface.tcp_rot.vel-cmd'
-        # )
-        # hal.Signal('tcp_rot_vel').link('hal_hw_interface.tcp_rot.vel-fb')
 
     def setup_drive(self):
         # Override in classes that need a drive setup routine
