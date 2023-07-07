@@ -11,7 +11,7 @@ ethercat_drive_params:
   joints:
     device_description_xml:
       # - See launch/hal_hardware.launch
-      ros_package:  za6_hardware
+      ros_package:  za_hardware
       path:  config/SV660_EOE_1Axis_V9.12.xml
 
     device_id:

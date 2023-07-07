@@ -49,6 +49,27 @@ hal_io:
       hal_type: BIT
     digital_in_16:
       hal_type: BIT
+
+    safety_input:
+      hal_type: BIT
+      hal_dir: IN
+      #key: /machine_state/safety_input
+    enabling_input:
+      hal_type: BIT
+      hal_dir: IN
+      #key: /machine_state/enabling_input
+    max_vel_safety_scale:
+      hal_type: FLOAT
+      hal_dir: IN
+      #key: /machine_state/max_velocity_limits/safety_input
+    quick_stop:
+      hal_type: BIT
+      hal_dir: IN
+      #key: /machine_state/quick_stop
+    controller_error_code:
+      hal_type: S32
+      hal_dir: IN
+      #key: /machine_state/controller_error_code
     #probe_in:
     #  hal_type: BIT
   subscribe_pins:
@@ -132,26 +153,26 @@ hal_io:
     #   service_name:  (any valid ROS service name, default /hal_io/<pin_name>)
     #   pub_topic:  (any valid ROS topic name, default /hal_io/<pin_name>)
 
-  redis_pins:
-    # redis-cli -p 62345 KEYS ros:\*
-    # redis-cli -p 62345 GET ros:machine_state/max_velocity_limits/safety_input
-    safety_input:
-      hal_type: BIT
-      hal_dir: IN
-      key: /machine_state/safety_input
-    enabling_input:
-      hal_type: BIT
-      hal_dir: IN
-      key: /machine_state/enabling_input
-    max_vel_safety_scale:
-      hal_type: FLOAT
-      hal_dir: IN
-      key: /machine_state/max_velocity_limits/safety_input
-    quick_stop:
-      hal_type: BIT
-      hal_dir: IN
-      key: /machine_state/quick_stop
-    controller_error_code:
-      hal_type: S32
-      hal_dir: IN
-      key: /machine_state/controller_error_code
+  #redis_pins:
+  #  # redis-cli -p 62345 KEYS ros:\*
+  #  # redis-cli -p 62345 GET ros:machine_state/max_velocity_limits/safety_input
+  #  safety_input:
+  #    hal_type: BIT
+  #    hal_dir: IN
+  #    key: /machine_state/safety_input
+  #  enabling_input:
+  #    hal_type: BIT
+  #    hal_dir: IN
+  #    key: /machine_state/enabling_input
+  #  max_vel_safety_scale:
+  #    hal_type: FLOAT
+  #    hal_dir: IN
+  #    key: /machine_state/max_velocity_limits/safety_input
+  #  quick_stop:
+  #    hal_type: BIT
+  #    hal_dir: IN
+  #    key: /machine_state/quick_stop
+  #  controller_error_code:
+  #    hal_type: S32
+  #    hal_dir: IN
+  #    key: /machine_state/controller_error_code

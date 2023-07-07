@@ -19,7 +19,7 @@
   <rosparam file="$(find za_hardware)/config/hal_hw_interface.yaml"/>
   <rosparam file="$(find za_hardware)/config/hal_io.yaml"/>
   <rosparam file="$(find za_hardware)/config/za_hardware.yaml" subst_value="true"/>
-  <rosparam file="$(find za_bringup)/config/hardware_settings.yaml" subst_value="true"/>
+  <rosparam file="$(find za_hardware)/config/hardware_settings.yaml" subst_value="true"/>
   <param name="sim_mode" value="$(arg sim)"/>
 
   <!-- RT CPUs and cgroup name are set in entrypoint and passed
@@ -34,7 +34,7 @@
       file="$(find za_hardware)/config/ethercat_drive_params_$(arg robot_drive_type).yaml"
       unless="$(arg sim)"/>
 
-    <!-- parameters being used by hal_402_drive_mgr -->
+  <!-- parameters being used by hal_402_drive_mgr -->
   <rosparam
       file="$(find za_hardware)/config/hal_402_device_mgr_$(arg robot_drive_type).yaml"
       unless="$(arg sim)"/>
@@ -45,17 +45,10 @@
       file="$(find za_hardware)/config/fault_codes_$(arg robot_drive_type).yaml"
       unless="$(arg sim)"/>
 
-  <!-- Set the HAL debug variables -->
-  <env name="DEBUG" value="$(arg hal_debug_level)"/>
-  <env name="SYSLOG_TO_STDERR"     if="$(arg hal_debug_output)" value="1"/>
-  <env name="SYSLOG_TO_STDERR" unless="$(arg hal_debug_output)" value=""/>
-
-  <!-- HAL manager node:  launch realtime environment -->
-  <node name="hal_mgr"
-        pkg="hal_hw_interface"
-        type="hal_mgr"
-        output="screen"
-        required="true"/>
+  <!-- Launch HAL ROS hardware interface and manager node -->
+  <include
+      file="$(find hal_hw_interface)/launch/hal_hw_interface.launch"
+      pass_all_args="true"/>
 
   <!-- <include file="$(find hal_hw_interface)/launch/hal_hw_interface.launch">
     <arg name="hal_debug_output" value="$(arg hal_debug_output)"/>
