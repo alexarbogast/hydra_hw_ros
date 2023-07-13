@@ -9,8 +9,9 @@
   <arg name="sim"              default="$(eval optenv('HARDWARE_MODE', 'sim') == 'sim')"
        doc="Should we connect to a simulated or real robot?"/>
 
-  <!-- - Drive type, if not sim -->
-  <arg name="robot_drive_type" default="$(eval optenv('ROBOT_DRIVE_TYPE', ''))"/>
+
+  <!-- - Servo drive type -->
+  <arg name="robot_drive_type" default="IS620N"/>
 
   <!-- EtherCAT config file -->
   <arg name="lcec_config_file" default="ethercat-za6-$(arg robot_drive_type).xml"/>
@@ -24,8 +25,8 @@
 
   <!-- RT CPUs and cgroup name are set in entrypoint and passed
        through docker-dev.sh -->
-  <param name="hal_mgr/rt_cpus" value="$(optenv RT_CPUS)"/>
-  <param name="hal_mgr/rt_cgname" value="$(optenv RT_CGNAME)"/>
+  <param name="hal_mgr/rt_cpus" value="3,7" unless="$(arg sim)"/>
+  <param name="hal_mgr/rt_cgname" value="/rt" unless="$(arg sim)"/>
   <param name="hal_mgr/hal_file_dir" value="$(find za_hardware)/halfiles"/>
   <param name="hal_mgr/lcec_config_file" value="$(arg lcec_config_file)"/>
 
@@ -49,18 +50,4 @@
   <include
       file="$(find hal_hw_interface)/launch/hal_hw_interface.launch"
       pass_all_args="true"/>
-
-  <!-- <include file="$(find hal_hw_interface)/launch/hal_hw_interface.launch">
-    <arg name="hal_debug_output" value="$(arg hal_debug_output)"/>
-    <arg name="hal_debug_level" value="$(arg hal_debug_level)"/>
-  </include> -->
-
-  <!-- For Virtual PathPilot run we are presuming simple single standing Dcoker environment-->
-  <!-- As such there is no DBus present and we cannot use Avahi announcement even in loopback -->
-  <!-- <node
-    name="sim_ui"
-    pkg="za_hardware"
-    type="run_sim_ui.py"
-    if="$(eval optenv('VIRTUAL_PATHPILOT', '1') != '1' and arg('sim'))"
-  /> -->
 </launch>
