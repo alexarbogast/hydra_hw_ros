@@ -25,18 +25,22 @@ catkin build
 ````
 
 ## Bringing up the za6
+Configure your [ros network](http://wiki.ros.org/ROS/NetworkSetup) so that a host computer is running the ros master node. 
 The *za_bringup* package provides the launch file `za_robot.launch` that launches the hal hardware interface and a position trajectory controller from the [ros_controllers](https://github.com/ros-controls/ros_controllers) package. 
 ```sh
-roslaunch za_bringup za_robot.launch arm_id:=za sim=false
+# inside container
+roslaunch za_bringup za_robot.launch arm_id:=za sim:=false
 ```
 ## Bringing up the Hydra System 
 The *hydra_bringup* package provides a robot launch file as well. 
 
 `robot 1 shell`
 ```sh
-roslaunch hydra_bringup za_robot.launch arm_id:=rob1 sim=false
+roslaunch hydra_bringup za_robot.launch arm_id:=rob1 sim:=false
 ```
 `robot 2 shell`
 ```sh
-roslaunch hydra_bringup za_robot.launch arm_id:=rob2 sim=false
+roslaunch hydra_bringup za_robot.launch arm_id:=rob2 sim:=false
 ```
+
+See the [hydra_host](https://github.com/alexarbogast/hydra_host_ros/tree/master) workspace for examples on motion planning and moving the robots via the host computer running the ros master node. 
