@@ -1,0 +1,91 @@
+# Settings for ros_control_boilerplate control loop
+generic_hw_control_loop:
+  loop_hz: 300
+  cycle_time_error_threshold: 0.01
+  
+# Settings for ros_control hardware interface
+hardware_interface:
+  joints:
+    - $(arg arm_id)_joint_1
+    - $(arg arm_id)_joint_2
+    - $(arg arm_id)_joint_3
+    - $(arg arm_id)_joint_4
+    - $(arg arm_id)_joint_5
+    - $(arg arm_id)_joint_6
+
+joint_state_controller:
+  type: joint_state_controller/JointStateController
+  publish_rate: 50
+
+position_trajectory_controller:
+  type: position_controllers/JointTrajectoryController
+  joints:
+    - $(arg arm_id)_joint_1
+    - $(arg arm_id)_joint_2
+    - $(arg arm_id)_joint_3
+    - $(arg arm_id)_joint_4
+    - $(arg arm_id)_joint_5
+    - $(arg arm_id)_joint_6
+  gains:
+    $(arg arm_id)_joint_1:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    $(arg arm_id)_joint_2:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    $(arg arm_id)_joint_3:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    $(arg arm_id)_joint_4:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    $(arg arm_id)_joint_5:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    $(arg arm_id)_joint_6:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    constraints:
+      goal_time: 1.0
+      # 1 deg. in rad. = 0.0174532925199
+      stopped_velocity_tolerance: 0.005 # Defaults to 0.01
+
+      # NOTE: max acceleration settings should be less than any downstream limits for best results
+      $(arg arm_id)_joint_1:
+        # Trajectory position tolerance:  enforce w/in +/- rad. along trajectory
+        trajectory: 0.05
+        # Goal position tolerance:  enforce w/in +/- rad. of final goal
+        goal:       0.017
+        max_acceleration: 6
+      $(arg arm_id)_joint_2:
+        trajectory: 0.05
+        goal:       0.017
+        max_acceleration: 10
+      $(arg arm_id)_joint_3:
+        trajectory: 0.05
+        goal:       0.017
+        max_acceleration: 12
+      $(arg arm_id)_joint_4:
+        trajectory: 0.05
+        goal:       0.017
+        max_acceleration: 10
+      $(arg arm_id)_joint_5:
+        trajectory: 0.05
+        goal:       0.017
+        max_acceleration: 12
+      $(arg arm_id)_joint_6:
+        trajectory: 0.05
+        goal:       0.017
+        max_acceleration: 20
