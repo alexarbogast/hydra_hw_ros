@@ -13,9 +13,10 @@ Install the workspace anywhere in the home directory. The workspace will be moun
 
 ## Building
 To build the packages, spin up a docker container for the robot. Follow the instructions at [za_docker](https://github.com/alexarbogast/za_docker) for building a ros development image for the robot.
+*Use the -x flag if you **do not** want to run in simulation mode.*
 ```sh
 cd za_docker
-./tormach_ros_dev_container 
+./tormach_ros_dev_container -x
 ```
 Navigate to your workspace and build the packages.
 ```sh
@@ -24,3 +25,18 @@ catkin build
 ````
 
 ## Bringing up the za6
+The *za_bringup* package provides the launch file `za_robot.launch` that launches the hal hardware interface and a position trajectory controller from the [ros_controllers](https://github.com/ros-controls/ros_controllers) package. 
+```sh
+roslaunch za_bringup za_robot.launch arm_id:=za sim=false
+```
+## Bringing up the Hydra System 
+The *hydra_bringup* package provides a robot launch file as well. 
+
+`robot 1 shell`
+```sh
+roslaunch hydra_bringup za_robot.launch arm_id:=rob1 sim=false
+```
+`robot 2 shell`
+```sh
+roslaunch hydra_bringup za_robot.launch arm_id:=rob2 sim=false
+```
