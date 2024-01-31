@@ -1,15 +1,20 @@
 [submodule "hal_ros_control"]
 	path = hal_ros_control
 	url = git@github.com:tormach/hal_ros_control.git
+  branch = noetic-devel
 [submodule "hydra_description"]
 	path = hydra_description
 	url = git@github.com:alexarbogast/hydra_description.git
+  branch = ampf
 [submodule "za_description"]
 	path = za_description
 	url = git@github.com:alexarbogast/za_description.git
+  branch = master
 [submodule "za_ros"]
 	path = za_ros
 	url = git@github.com:alexarbogast/za_ros.git
+  branch = master
 [submodule "hydra_ros"]
 	path = hydra_ros
-	url = git@github.com:alexarbogast/hydra_ros.git
+  url = git@github.com:alexarbogast/hydra_ros.git
+  branch = ampf
