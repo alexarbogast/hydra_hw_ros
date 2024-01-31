@@ -7,3 +7,9 @@
 [submodule "za_description"]
 	path = za_description
 	url = git@github.com:alexarbogast/za_description.git
+[submodule "za_ros"]
+	path = za_ros
+	url = git@github.com:alexarbogast/za_ros.git
+[submodule "hydra_ros"]
+	path = hydra_ros
+	url = git@github.com:alexarbogast/hydra_ros.git
